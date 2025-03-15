@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 namespace TextureBackgroundViewer.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
 {
+    //Загружаем все превью, - может зависнуть если более 100
+    private readonly int EAGER_LOAD_COUNT = int.MaxValue;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CurrentColorBackground))]
     public double opacitySliderValue = 0.9;
@@ -83,7 +86,7 @@ public partial class MainWindowViewModel : ObservableObject
         if (ofd.ShowDialog() == true)
         {
             TexturesFolder = ofd.FolderName;
-            await LoadResourceFromWorkingFolder();
+            await LoadResourceFromWorkingFolder(TexturesFolder);
 
             Application.Current.Properties["CurrentResourceFolder"] = TexturesFolder.ToString();
         }
@@ -95,18 +98,25 @@ public partial class MainWindowViewModel : ObservableObject
         if (Application.Current.Properties.Contains("CurrentResourceFolder"))
         {
             this.TexturesFolder = Application.Current.Properties["CurrentResourceFolder"]!.ToString() ?? "";
-            await LoadResourceFromWorkingFolder();
+            await LoadResourceFromWorkingFolder(TexturesFolder);
         }
     }
 
-    private async Task LoadResourceFromWorkingFolder()
+    protected async Task LoadResourceFromWorkingFolder(string folder)
     {
         TexturesCollection.Clear();
+        var allowedExtensions = new[] { ".jpg", ".png", ".jpeg" };
 
-        var textureFiles = Directory.GetFiles(TexturesFolder, "*.*", SearchOption.AllDirectories)
+        if (!Directory.Exists(folder))
+        {
+            return;
+        }
+
+        var textureFiles = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories)
+            .Where(file => allowedExtensions.Contains(Path.GetExtension(file).ToLower()))
             .ToArray();
 
-        int EAGER_LOAD_COUNT = 20;
+
         int i = 0;
         foreach (var file in textureFiles)
         {
