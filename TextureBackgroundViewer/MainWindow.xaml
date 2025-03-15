@@ -1,71 +1,202 @@
-﻿<Window x:Class="TextureBackgroundViewer.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TextureBackgroundViewer"
-        mc:Ignorable="d"
-        x:Name="window"
-        Title="{Binding Title}" Height="442" Width="743">
+﻿<Window
+    x:Class="TextureBackgroundViewer.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TextureBackgroundViewer"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:TextureBackgroundViewer.ViewModels"
+    x:Name="window"
+    Title="{Binding Title}"
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True,
+                                     Type={x:Type vm:DesignTime_MainWindowViewModel}}"
+    mc:Ignorable="d">
     <Window.DataContext>
-        <local:MainWindow />
+        <vm:MainWindowViewModel />
     </Window.DataContext>
-    <Grid x:Name="mainGrid">
+    <Window.Background>
+        <ImageBrush
+            ImageSource="{Binding CurrentTextureBackground, Mode=OneWay}"
+            Stretch="UniformToFill"
+            TileMode="Tile"
+            Viewport="{Binding CurrentTextureTileBrushRect}"
+            ViewportUnits="Absolute" />
+    </Window.Background>
+    <Grid Background="{Binding CurrentColorBackground}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="1" Background="AliceBlue" HorizontalAlignment="Center" VerticalAlignment="Center" >
+        <Grid
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Background="AliceBlue">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Цвет оверлея" HorizontalAlignment="Center"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Белый" 
-                       HorizontalAlignment="Center"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="Черный"
-                       HorizontalAlignment="Center" />
-            <Border Grid.Row="2" Grid.Column="0" BorderBrush="LightGray" BorderThickness="1" Margin="8"
-                    HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Rectangle Fill="White" Width="64" Height="64" x:Name="rectWhite" MouseDown="rectWhite_MouseDown" />
-            </Border>
-            <Border Grid.Row="2" Grid.Column="1" BorderBrush="LightGray" BorderThickness="1" Margin="8"
-                    HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Rectangle Fill="Black" Width="64" Height="64" x:Name="rectBlack" MouseDown="rectBlack_MouseDown" />
-            </Border>
-            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                       Text="{Binding OpacitySliderValue, StringFormat={}Прозрачность {0:P0}}" HorizontalAlignment="Center"/>
-            <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-                <Slider Minimum="0" Maximum="1" Value="{Binding OpacitySliderValue}"/>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Text="Цвет оверлея" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                Text="Белый" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                Text="Черный" />
+            <Button
+                x:Name="btnColorWhite"
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="8"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding SetColorCommand}"
+                CommandParameter="{Binding ElementName=btnColorWhite, Path=Tag}"
+                Tag="White">
+                <Border BorderBrush="LightGray" BorderThickness="1">
+                    <Rectangle
+                        Width="64"
+                        Height="64"
+                        Fill="White" />
+                </Border>
+            </Button>
+            <Button
+                x:Name="btnColorBlack"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="8"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding SetColorCommand}"
+                CommandParameter="{Binding ElementName=btnColorBlack, Path=Tag}"
+                Tag="Black">
+                <Border BorderBrush="LightGray" BorderThickness="1">
+                    <Rectangle
+                        Width="64"
+                        Height="64"
+                        Fill="Black" />
+                </Border>
+            </Button>
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Text="{Binding OpacitySliderValue, StringFormat={}Прозрачность {0:P0}}" />
+            <Grid
+                Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Slider
+                    Maximum="1"
+                    Minimum="0"
+                    Value="{Binding OpacitySliderValue}" />
             </Grid>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="W" 
-                       HorizontalAlignment="Center"/>
-            <TextBlock Grid.Row="5" Grid.Column="1" Text="H" 
-                       HorizontalAlignment="Center"/>
-            <TextBox Grid.Row="6" Grid.Column="0" Text="{Binding TextureWidth}" />
-            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding TextureHeight}" />
+            <Grid
+                Grid.Row="5"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    Text="W" />
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    Text="H" />
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Text="{Binding TextureWidth}" />
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Text="{Binding TextureHeight}" />
+
+                <ItemsControl
+                    Grid.Row="2"
+                    MaxWidth="160"
+                    Grid.ColumnSpan="2"
+                    ItemsSource="{Binding SizeTemplates}">
+                    <ItemsControl.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Blue" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Margin" Value="0,1,3,1" />
+                            <Setter Property="Padding" Value="1" />
+                            <Setter Property="FontSize" Value="9" />
+                        </Style>
+                    </ItemsControl.Resources>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Width="50" Command="{Binding SetSizeCommand}" Content="{Binding SizeString, Mode=OneTime}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
 
         </Grid>
         <ScrollViewer>
-            <ItemsControl Grid.Column="0" 
-                          HorizontalAlignment="Center" VerticalAlignment="Center"
-                      ItemsSource="{Binding TexturesCollection}" Background="White">
+            <ItemsControl
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="White"
+                ItemsSource="{Binding TexturesCollection}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button x:Name="btnSetTexture" Click="btnSetTexture_Click" Tag="{Binding}" Background="Transparent">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <Border Padding="2" BorderThickness="1" BorderBrush="LightGray">
-                                    <Image Width="50" Height="50" Source="{Binding FullName}" ToolTip="{Binding FullName}" />
+                        <Button
+                            Background="Transparent"
+                            Command="{Binding SetThisTextureCommand}"
+                            CommandParameter="{Binding}">
+                            <StackPanel
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                <Border
+                                    Padding="2"
+                                    BorderBrush="LightGray"
+                                    BorderThickness="1">
+                                    <Image
+                                        Width="50"
+                                        Height="50"
+                                        Source="{Binding FullName}"
+                                        ToolTip="{Binding FullName}" />
                                 </Border>
                             </StackPanel>
                         </Button>
@@ -73,7 +204,7 @@
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel IsItemsHost="True"/>
+                        <StackPanel IsItemsHost="True" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>

@@ -1,18 +1,27 @@
-﻿using System.IO;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.IO;
+using TextureBackgroundViewer.ViewModels;
 
 namespace TextureBackgroundViewer;
 
-public class TextureInfo
+public partial class TextureInfo : ObservableObject
 {
     private readonly FileInfo fi;
-    private readonly int number;
+    private readonly MainWindowViewModel parentViewModel;
 
-    public TextureInfo(FileInfo fi)
+    public TextureInfo(FileInfo fi, MainWindowViewModel parentViewModel)
     {
         this.fi = fi;
-        this.number = number;
+        this.parentViewModel = parentViewModel;
     }
 
     public string FullName => fi.FullName;
     public string ShortName => fi.Name;
+
+    [RelayCommand]
+    public void SetThisTexture()
+    {
+        parentViewModel.SetTexture(this);
+    }
 }
