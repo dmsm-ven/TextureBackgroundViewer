@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Globalization;
 
 namespace TextureBackgroundViewer.ViewModels;
 
@@ -9,17 +10,19 @@ public partial class SizeSelectorItem : ObservableObject
 
     private readonly int width;
     private readonly int height;
-    private readonly bool isOriginal;
+    private readonly double ratio;
 
-    public string SizeString => $"{width}x{height}{(isOriginal ? "(orig)" : "")}";
+    public string SizeString => $"{width}*{height} x{ratio.ToString("G2", new CultureInfo("en-US"))}";
 
-
-    public SizeSelectorItem(MainWindowViewModel parentViewModel, int width, int height, bool isOriginal)
+    public SizeSelectorItem(MainWindowViewModel parentViewModel,
+        int width,
+        int height,
+        double ratio)
     {
         this.parentViewModel = parentViewModel;
         this.width = width;
         this.height = height;
-        this.isOriginal = isOriginal;
+        this.ratio = ratio;
     }
 
     [RelayCommand]

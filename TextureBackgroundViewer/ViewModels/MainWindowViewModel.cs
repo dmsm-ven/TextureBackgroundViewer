@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -72,21 +73,49 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
-        Loaded();
+
+    }
+
+    [RelayCommand]
+    public async Task ChangeFolder()
+    {
+        var ofd = new OpenFolderDialog();
+        if (ofd.ShowDialog() == true)
+        {
+            TexturesFolder = ofd.FolderName;
+            await LoadResourceFromWorkingFolder();
+
+            Application.Current.Properties["CurrentResourceFolder"] = TexturesFolder.ToString();
+        }
     }
 
     [RelayCommand]
     public async Task Loaded()
     {
-        var textureFiles = Directory.GetFiles(TexturesFolder, "*.*", SearchOption.AllDirectories)
-        .Take(50)
-        .Select(file => new FileInfo(file))
-        .OrderByDescending(file => file.CreationTime)
-        .ToArray();
+        if (Application.Current.Properties.Contains("CurrentResourceFolder"))
+        {
+            this.TexturesFolder = Application.Current.Properties["CurrentResourceFolder"]!.ToString() ?? "";
+            await LoadResourceFromWorkingFolder();
+        }
+    }
 
+    private async Task LoadResourceFromWorkingFolder()
+    {
+        TexturesCollection.Clear();
+
+        var textureFiles = Directory.GetFiles(TexturesFolder, "*.*", SearchOption.AllDirectories)
+            .ToArray();
+
+        int EAGER_LOAD_COUNT = 20;
+        int i = 0;
         foreach (var file in textureFiles)
         {
-            TexturesCollection.Add(new TextureInfo(file, this));
+            var item = new TextureInfo(file, this);
+            if (i++ < EAGER_LOAD_COUNT)
+            {
+                item.IsRefreshed = true;
+            }
+            await Application.Current.Dispatcher.InvokeAsync(() => TexturesCollection.Add(item));
         }
     }
 
@@ -106,11 +135,11 @@ public partial class MainWindowViewModel : ObservableObject
         for (int i = 1; i < 10; i++)
         {
             double ratio = stepSize * i;
+
             int w = (int)(img.Width * ratio);
             int h = (int)(img.Height * ratio);
-            bool isOriginal = w == TextureWidth && h == TextureHeight;
 
-            SizeTemplates.Add(new SizeSelectorItem(this, w, h, isOriginal));
+            SizeTemplates.Add(new SizeSelectorItem(this, w, h, ratio));
         }
     }
 
