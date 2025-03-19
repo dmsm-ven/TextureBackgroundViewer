@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -13,6 +14,10 @@ using System.Windows.Media.Imaging;
 namespace TextureBackgroundViewer.ViewModels;
 public partial class MainWindowViewModel : ObservableObject
 {
+    //Таймер авто-смены текстуры
+    private readonly PeriodicTimer playTimer;
+    private CancellationTokenSource? cts = null;
+
     //Загружаем все превью, - может зависнуть если более 100
     private readonly int EAGER_LOAD_COUNT = int.MaxValue;
 
@@ -76,7 +81,42 @@ public partial class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
+        playTimer = new PeriodicTimer(TimeSpan.FromSeconds(1.5));
+    }
 
+    [RelayCommand]
+    public async Task StartPlay()
+    {
+        if (TexturesCollection.Count == 0)
+        {
+            return;
+        }
+
+        this.cts = new CancellationTokenSource();
+
+        await Task.Delay(playTimer.Period);
+
+        try
+        {
+            while (await playTimer.WaitForNextTickAsync(cts.Token))
+            {
+                var currentTexture = TexturesCollection.FirstOrDefault(t => t.FullName == SelectedTexturePath);
+                var nextTextureIndex = (TexturesCollection.IndexOf(currentTexture) + 1) % TexturesCollection.Count;
+                var nextTexture = TexturesCollection[nextTextureIndex];
+                nextTexture.SetThisTexture();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            //ignore
+            cts = null;
+        }
+    }
+
+    [RelayCommand]
+    public void StopPlay()
+    {
+        cts?.Cancel();
     }
 
     [RelayCommand]
@@ -139,7 +179,6 @@ public partial class MainWindowViewModel : ObservableObject
         TextureHeight = (int)img.Height;
 
         SizeTemplates.Clear();
-
 
         double stepSize = 0.2;
         for (int i = 1; i < 10; i++)

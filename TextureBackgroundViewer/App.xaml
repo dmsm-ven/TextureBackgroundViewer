@@ -1,8 +1,20 @@
-﻿<Application x:Class="TextureBackgroundViewer.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:TextureBackgroundViewer">
+﻿<Application
+    x:Class="TextureBackgroundViewer.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:local="clr-namespace:TextureBackgroundViewer">
     <Application.Resources>
-         
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#c0c0c0" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="DarkBlue" />
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="{x:Type icons:PackIconModern}">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+        </Style>
     </Application.Resources>
 </Application>

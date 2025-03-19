@@ -6,6 +6,7 @@
     xmlns:intr="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:TextureBackgroundViewer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:vm="clr-namespace:TextureBackgroundViewer.ViewModels"
     x:Name="window"
     Title="{Binding Title}"
@@ -38,7 +39,18 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Grid.Column="0">
-            <Button Content="Выбрать папку" Command="{Binding ChangeFolderCommand}"/>
+            <UniformGrid Columns="3">
+                <Button ToolTip="Папка" Command="{Binding ChangeFolderCommand}" Style="{StaticResource IconButtonStyle}">
+                    <icons:PackIconModern Kind="FolderOpen" />
+                </Button>
+                <Button ToolTip="Play" Command="{Binding StartPlayCommand}" Style="{StaticResource IconButtonStyle}">
+                    <icons:PackIconModern Kind="Timer" />
+                </Button>
+                <Button ToolTip="Stop" Command="{Binding StopPlayCommand}" Style="{StaticResource IconButtonStyle}">
+                    <icons:PackIconModern Kind="TimerPause" />
+                </Button>
+            </UniformGrid>
+            
         </Grid>
         <Grid
             Grid.Row="1"
