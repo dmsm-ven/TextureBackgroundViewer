@@ -1,0 +1,166 @@
+﻿<UserControl
+    x:Class="TextureBackgroundViewer.Controls.TextureColorToolbar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TextureBackgroundViewer.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:TextureBackgroundViewer.ViewModels"
+    Width="220"
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True,
+                                     Type={x:Type vm:DesignTime_MainWindowViewModel}}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="TransparentBackgroundBrush" Color="#7fffffff" />
+        <SolidColorBrush x:Key="TransparentForegroundBrush" Color="#df000080" />
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TransparentForegroundBrush}" />
+        </Style>
+    </UserControl.Resources>
+    <Border BorderBrush="LightGray" BorderThickness="1">
+        <Grid Background="{StaticResource TransparentBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Text="Цвет оверлея" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                Text="Белый" />
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                Text="Черный" />
+            <Button
+                x:Name="btnColorWhite"
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="8"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding SetColorCommand}"
+                CommandParameter="{Binding ElementName=btnColorWhite, Path=Tag}"
+                Tag="White">
+                <Border BorderBrush="LightGray" BorderThickness="1">
+                    <Rectangle
+                        Width="64"
+                        Height="64"
+                        Fill="White" />
+                </Border>
+            </Button>
+            <Button
+                x:Name="btnColorBlack"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="8"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding SetColorCommand}"
+                CommandParameter="{Binding ElementName=btnColorBlack, Path=Tag}"
+                Tag="Black">
+                <Border BorderBrush="LightGray" BorderThickness="1">
+                    <Rectangle
+                        Width="64"
+                        Height="64"
+                        Fill="Black" />
+                </Border>
+            </Button>
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Text="{Binding OpacitySliderValue, StringFormat={}Прозрачность {0:P0}}" />
+            <Grid
+                Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Slider
+                    Maximum="1"
+                    Minimum="0"
+                    Value="{Binding OpacitySliderValue}" />
+            </Grid>
+
+            <Grid
+                Grid.Row="5"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    Text="W" />
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    Text="H" />
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Background="{StaticResource TransparentBackgroundBrush}"
+                    Text="{Binding TextureWidth}" />
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Background="{StaticResource TransparentBackgroundBrush}"
+                    Text="{Binding TextureHeight}" />
+
+                <ItemsControl
+                    Grid.Row="2"
+                    Grid.ColumnSpan="2"
+                    ItemsSource="{Binding SizeTemplates}">
+                    <ItemsControl.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Blue" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Margin" Value="0,1,3,1" />
+                            <Setter Property="Padding" Value="3,2" />
+                            <Setter Property="FontSize" Value="9" />
+                        </Style>
+                    </ItemsControl.Resources>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid
+                                Columns="3"
+                                IsItemsHost="True"
+                                Rows="3" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding SetSizeCommand}" Content="{Binding SizeString, Mode=OneTime}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using TextureBackgroundViewer.ViewModels;
 
 namespace TextureBackgroundViewer;
@@ -17,6 +19,9 @@ public partial class TextureInfo : ObservableObject
     [NotifyPropertyChangedFor(nameof(FullName))]
     public bool isRefreshed = false;
 
+    [ObservableProperty]
+    public bool isSelected = false;
+
     public TextureInfo(string fileName, MainWindowViewModel parentViewModel)
     {
         this.fileName = fileName;
@@ -29,7 +34,18 @@ public partial class TextureInfo : ObservableObject
     [RelayCommand]
     public void SetThisTexture()
     {
+        parentViewModel.TexturesCollection.ToList().ForEach(i => i.IsSelected = false);
+
         IsRefreshed = true;
+        IsSelected = true;
         parentViewModel.SetTexture(this);
+
+        Debug.WriteLine($"Текстура {ShortName} подгружена");
+    }
+
+    [RelayCommand]
+    public void RevealThisTextureInExplorer()
+    {
+        Process.Start("explorer.exe", "/select," + this.FullName.Replace(@"/", @"\"));
     }
 }

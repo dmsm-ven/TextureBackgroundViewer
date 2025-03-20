@@ -71,6 +71,10 @@ public partial class MainWindowViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CurrentTextureTileBrushRect))]
     public int textureHeight = 0;
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StopPlayCommand))]
+    public bool canStopPlayCommand = false;
+
     public Rect CurrentTextureTileBrushRect
     {
         get
@@ -94,7 +98,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         this.cts = new CancellationTokenSource();
 
-        await Task.Delay(playTimer.Period);
+        CanStopPlayCommand = true;
 
         try
         {
@@ -103,6 +107,7 @@ public partial class MainWindowViewModel : ObservableObject
                 var currentTexture = TexturesCollection.FirstOrDefault(t => t.FullName == SelectedTexturePath);
                 var nextTextureIndex = (TexturesCollection.IndexOf(currentTexture) + 1) % TexturesCollection.Count;
                 var nextTexture = TexturesCollection[nextTextureIndex];
+
                 nextTexture.SetThisTexture();
             }
         }
@@ -110,10 +115,11 @@ public partial class MainWindowViewModel : ObservableObject
         {
             //ignore
             cts = null;
+            CanStopPlayCommand = false;
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanStopPlayCommand))]
     public void StopPlay()
     {
         cts?.Cancel();
@@ -179,7 +185,6 @@ public partial class MainWindowViewModel : ObservableObject
         TextureHeight = (int)img.Height;
 
         SizeTemplates.Clear();
-
         double stepSize = 0.2;
         for (int i = 1; i < 10; i++)
         {

@@ -1,0 +1,73 @@
+﻿<UserControl
+    x:Class="TextureBackgroundViewer.Controls.TextureListControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TextureBackgroundViewer.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:TextureBackgroundViewer.ViewModels"
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True,
+                                     Type={x:Type vm:DesignTime_MainWindowViewModel}}"
+    d:DesignHeight="450"
+    Background="White"
+    mc:Ignorable="d">
+    <ItemsControl ItemsSource="{Binding TexturesCollection}">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Button
+                    Background="Transparent"
+                    BorderBrush="{Binding IsSelected, Converter={StaticResource IsSelectedItemToSolidColorBrushConverter}, ConverterParameter='Blue;Transparent'}"
+                    BorderThickness="2"
+                    Command="{Binding SetThisTextureCommand}"
+                    CommandParameter="{Binding}">
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Border
+                            Padding="2"
+                            BorderBrush="LightGray"
+                            BorderThickness="1">
+                            <Grid MaxWidth="50">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Показать в папке" Command="{Binding RevealThisTextureInExplorerCommand}" />
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <Image
+                                    Width="50"
+                                    Height="50"
+                                    Source="{Binding FullName}"
+                                    ToolTip="{Binding ShortName}" />
+                                <TextBlock
+                                    FontSize="9"
+                                    Foreground="Blue"
+                                    Text="{Binding ShortName}" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Button>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <VirtualizingStackPanel IsItemsHost="True" />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.Template>
+            <ControlTemplate TargetType="ItemsControl">
+                <Border
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                    <ScrollViewer
+                        Padding="{TemplateBinding Padding}"
+                        CanContentScroll="True"
+                        Focusable="False">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </Border>
+            </ControlTemplate>
+        </ItemsControl.Template>
+    </ItemsControl>
+</UserControl>
